@@ -10,8 +10,8 @@ import lombok.Setter;
 @Setter
 public class CWServicePlan extends CWObject{
 	
+	private String planId;
 	private String type;
 	private double cost;
 	private String description;
-	
 }

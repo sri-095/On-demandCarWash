@@ -12,10 +12,6 @@ public class CarDetails extends CWObject {
 	
 	private String plateNumber;
 	private String color;
-	//private Customer customer;
-	//private String status;
-	//private Washer washer;
-	private char washerAssigned;
-
+	private String customerId;
 
 }

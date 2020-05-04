@@ -6,13 +6,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.capg.ocw.exception.OcwException;
 import com.capg.ocw.model.dto.CarDetailsDto;
 import com.capg.ocw.operation.CarManagementOperation;
+import com.capg.ocw.util.OCWConstants;
 
 @RestController
 @RequestMapping("/api/carmanagement")
@@ -30,6 +34,15 @@ public class CarManagementContoller {
 	public ResponseEntity<String> addOrUpdateCars(@RequestBody List<CarDetailsDto> carDetailsDto) {
 		carManagementOperation.addOrUpdateCars(carDetailsDto);
 		return new ResponseEntity<>(HttpStatus.OK);
+	}
+	
+	@PutMapping("/{status}")
+	public ResponseEntity<String> activateOrDeactivateWasher(@RequestBody CarDetailsDto carDetailsDto,@PathVariable String status) throws OcwException {
+		if(OCWConstants.ACTIVE.equalsIgnoreCase(status))
+			return new ResponseEntity<>(carManagementOperation.activateCar(carDetailsDto) , HttpStatus.OK);
+		else if(OCWConstants.INACTIVE.equalsIgnoreCase(status))
+			return new ResponseEntity<>(carManagementOperation.deactivateCar(carDetailsDto),HttpStatus.OK);
+		return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 	}
 	
 }

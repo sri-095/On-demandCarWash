@@ -7,5 +7,7 @@ public class  CarDetailsDto {
 	private String name;
 	private String plateNumber;
 	private String color;
+	private char lastRevision;
+	
 
 }

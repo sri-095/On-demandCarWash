@@ -5,14 +5,17 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.capg.ocw.exception.OcwException;
 import com.capg.ocw.model.CarDetails;
 import com.capg.ocw.model.dto.CarDetailsDto;
 import com.capg.ocw.repository.CarDetailsRespository;
+import com.capg.ocw.util.OCWConstants;
 
 @Component
 public class CarManagementOperation {
-	
+
 	@Autowired
 	private CarDetailsRespository carDetailsRespository;
 
@@ -29,9 +32,10 @@ public class CarManagementOperation {
 		return carDetailsDtoList;
 	}
 
+	@Transactional(rollbackFor = OcwException.class)
 	public void addOrUpdateCars(List<CarDetailsDto> carDetailsDtoList) {
 		List<CarDetails> carDetailsList = new ArrayList<>();
-		
+
 		for(CarDetailsDto carDetailsDto : carDetailsDtoList) {
 			CarDetails carDetails = carDetailsRespository.findByPlateNumber(carDetailsDto.getPlateNumber());
 			if(null != carDetails) {
@@ -44,15 +48,27 @@ public class CarManagementOperation {
 				CarDetails newCarDetails = new CarDetails();
 				newCarDetails.setName(carDetailsDto.getName());
 				newCarDetails.setPlateNumber(carDetailsDto.getPlateNumber());
+				newCarDetails.setLastRevision(OCWConstants.YES_CHAR);
 				carDetailsList.add(newCarDetails);
 			}
 		}
 		carDetailsRespository.saveAll(carDetailsList);
 	}
-	
-	
-	
-	
-	
-	
+
+	@Transactional(rollbackFor = OcwException.class)
+	public String deactivateCar(CarDetailsDto carDetailsDto) throws OcwException {
+		CarDetails carDetails = carDetailsRespository.findByPlateNumber(carDetailsDto.getPlateNumber());
+		carDetails.setLastRevision(OCWConstants.NO_CHAR);
+		carDetailsRespository.save(carDetails);
+		return "Deactivated Car Sucessfully";
+	}
+
+	@Transactional(rollbackFor = OcwException.class)
+	public String activateCar(CarDetailsDto carDetailsDto) throws OcwException {
+		CarDetails carDetails = carDetailsRespository.findByPlateNumber(carDetailsDto.getPlateNumber());
+		carDetails.setLastRevision(OCWConstants.YES_CHAR);
+		carDetailsRespository.save(carDetails);
+		return "Activated Car Sucessfully";
+	}
+
 }
