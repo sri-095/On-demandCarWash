@@ -14,33 +14,33 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.capg.ocw.exception.OcwException;
-import com.capg.ocw.model.dto.ServicePlanDto;
-import com.capg.ocw.operation.ServicePlanOperation;
+import com.capg.ocw.model.dto.AddOnDto;
+import com.capg.ocw.operation.AddOnOperation;
 import com.capg.ocw.util.OCWConstants;
 
 @RestController
-@RequestMapping("/api/servicePlan")
-public class ServicePlanController {
+@RequestMapping("/api/addon")
+public class AddOnController {
 	@Autowired
-	private ServicePlanOperation servicePlanOperation;
+	private AddOnOperation addOnOperation;
 	
 	@GetMapping("/getAllServicePlans")
-	public ResponseEntity<List<ServicePlanDto>> fetchAllServicePlans() {
-		List<ServicePlanDto> servicePlans = servicePlanOperation.getAllServicePlans();
+	public ResponseEntity<List<AddOnDto>> fetchAllAddOns() {
+		List<AddOnDto> servicePlans = addOnOperation.getAllAddOns();
 		return new ResponseEntity<>(servicePlans, HttpStatus.OK);
 	}
 	
 	@PostMapping("/addOrUpdateServicePlan")
-	public ResponseEntity<List<ServicePlanDto>> addOrUpdateServicePlan(List<ServicePlanDto> servicePlans) {
-		return new ResponseEntity<>(servicePlanOperation.addOrUpdateServicePlans(servicePlans), HttpStatus.OK);
+	public ResponseEntity<List<AddOnDto>> addOrUpdateAddOn(List<AddOnDto> addOnDtos) {
+		return new ResponseEntity<>(addOnOperation.addOrUpdateAddOn(addOnDtos), HttpStatus.OK);
 	}
 	
 	@PutMapping("/{status}")
-	public ResponseEntity<String> activateOrDeactivateServicePlan(@RequestBody ServicePlanDto servicePlanDto,@PathVariable String status) throws OcwException {
+	public ResponseEntity<String> activateOrDeactivateAddOn(@RequestBody AddOnDto addOnDto,@PathVariable String status) throws OcwException {
 		if(OCWConstants.ACTIVE.equalsIgnoreCase(status))
-			return new ResponseEntity<>(servicePlanOperation.activateServicePlan(servicePlanDto) , HttpStatus.OK);
+			return new ResponseEntity<>(addOnOperation.activateAddOn(addOnDto) , HttpStatus.OK);
 		else if(OCWConstants.INACTIVE.equalsIgnoreCase(status))
-			return new ResponseEntity<>(servicePlanOperation.deactivateServicePlan(servicePlanDto),HttpStatus.OK);
+			return new ResponseEntity<>(addOnOperation.deactivateAddOn(addOnDto),HttpStatus.OK);
 		return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 	}
 }
