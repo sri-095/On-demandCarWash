@@ -6,14 +6,17 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import com.capg.ocw.exception.OcwException;
 import com.capg.ocw.model.AddOn;
 import com.capg.ocw.model.dto.AddOnDto;
 import com.capg.ocw.repository.AddOnRepository;
-import com.capg.ocw.util.OCWConstants;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Component
+@Slf4j
 public class AddOnOperation {
 
 	@Autowired
@@ -30,6 +33,7 @@ public class AddOnOperation {
 			addOnDto.setAddOnId(addOn.getAddOnId());
 			addOnDtos.add(addOnDto);
 		});
+		log.info("AddOn fetched Sucessfully");
 		return addOnDtos;
 	}
 	
@@ -41,30 +45,36 @@ public class AddOnOperation {
 			if(null == addOn) {
 				addOn = new AddOn();
 				addOn.setAddOnId(addOnDto.getAddOnId());
+				log.info("New Add on created Sucessfully");
 			}
 			addOn.setName(addOnDto.getName());
 			addOn.setDescription(addOnDto.getDescription());
 			addOn.setCost(addOnDto.getCost());
 			addOns.add(addOn);
+			log.info("Add on updated Sucessfully");
 		}
 		addOnRepository.saveAll(addOns);
 		return getAllAddOns();
 	}
 
-	@Transactional(rollbackFor = OcwException.class)
-	public String deactivateAddOn(AddOnDto AddOnDto) throws OcwException {
-		AddOn addOn = addOnRepository.findByAddOnId(AddOnDto.getAddOnId());
-		addOn.setLastRevision(OCWConstants.NO_CHAR);
-		addOnRepository.save(addOn);
-		return "Deactivated addOn Sucessfully";
-	}
-
-	@Transactional(rollbackFor = OcwException.class)
-	public String activateAddOn(AddOnDto addOnDto) throws OcwException {
-		AddOn addOn = addOnRepository.findByAddOnId(addOnDto.getAddOnId());
-		addOn.setLastRevision(OCWConstants.YES_CHAR);
-		addOnRepository.save(addOn);
-		return "Activated addOn Sucessfully";
+	public List<AddOnDto> activaOrInActiveAddOn(String status) throws OcwException {
+		List<AddOn> addOns = addOnRepository.findByStatus(status);
+		List<AddOnDto> addOnDtos = new ArrayList<>();
+		
+		if(CollectionUtils.isEmpty(addOns))
+			log.error("No " + status +" Addons found!");
+		else {
+		addOns.stream().forEach(addOn -> {
+			AddOnDto addOnDto = new AddOnDto();
+			addOnDto.setName(addOn.getName());
+			addOnDto.setDescription(addOn.getDescription());
+			addOnDto.setCost(addOn.getCost());
+			addOnDto.setAddOnId(addOn.getAddOnId());
+			addOnDtos.add(addOnDto);
+		});
+		log.info("Fetched all " + status +" Addons ");
+		}
+		return addOnDtos;
 	}
 
 }

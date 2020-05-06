@@ -11,5 +11,7 @@ import lombok.Setter;
 public class Customer extends CWObject{
 	
 	private String customerId;
-
+	private CarDetails carDetails;
+	private String email;
+	private long phoneNumber;
 }

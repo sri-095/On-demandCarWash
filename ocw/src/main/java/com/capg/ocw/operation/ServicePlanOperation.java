@@ -11,7 +11,6 @@ import com.capg.ocw.exception.OcwException;
 import com.capg.ocw.model.CWServicePlan;
 import com.capg.ocw.model.dto.ServicePlanDto;
 import com.capg.ocw.repository.ServicePlanRepository;
-import com.capg.ocw.util.OCWConstants;
 
 @Component
 public class ServicePlanOperation {
@@ -54,19 +53,20 @@ public class ServicePlanOperation {
 	}
 
 	@Transactional(rollbackFor = OcwException.class)
-	public String deactivateServicePlan(ServicePlanDto servicePlanDto) throws OcwException {
-		CWServicePlan servicePlan = servicePlanRepository.findByPlanId(servicePlanDto.getPlanId());
-		servicePlan.setLastRevision(OCWConstants.NO_CHAR);
-		servicePlanRepository.save(servicePlan);
-		return "Deactivated washer Sucessfully";
+	public List<ServicePlanDto> activateOrInactiveServicePlan(String status) throws OcwException {
+		List<ServicePlanDto> servicePlanDtos = new ArrayList<>();
+		List<CWServicePlan> servicePlans = servicePlanRepository.findByStatus(status);
+		servicePlans.stream().forEach(plan -> {
+			ServicePlanDto planDto = new ServicePlanDto();
+			planDto.setName(plan.getName());
+			planDto.setDescription(plan.getDescription());
+			planDto.setCost(plan.getCost());
+			planDto.setType(plan.getType());
+			planDto.setPlanId(plan.getPlanId());
+			servicePlanDtos.add(planDto);
+		});
+		return servicePlanDtos;
 	}
 
-	@Transactional(rollbackFor = OcwException.class)
-	public String activateServicePlan(ServicePlanDto servicePlanDto) throws OcwException {
-		CWServicePlan servicePlan = servicePlanRepository.findByPlanId(servicePlanDto.getPlanId());
-		servicePlan.setLastRevision(OCWConstants.YES_CHAR);
-		servicePlanRepository.save(servicePlan);
-		return "Activated washer Sucessfully";
-	}
 
 }

@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,12 +35,10 @@ public class CarManagementContoller {
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	
-	@PutMapping("/{status}")
-	public ResponseEntity<String> activateOrDeactivateWasher(@RequestBody CarDetailsDto carDetailsDto,@PathVariable String status) throws OcwException {
-		if(OCWConstants.ACTIVE.equalsIgnoreCase(status))
-			return new ResponseEntity<>(carManagementOperation.activateCar(carDetailsDto) , HttpStatus.OK);
-		else if(OCWConstants.INACTIVE.equalsIgnoreCase(status))
-			return new ResponseEntity<>(carManagementOperation.deactivateCar(carDetailsDto),HttpStatus.OK);
+	@GetMapping("/{status}")
+	public ResponseEntity<List<CarDetailsDto>> activeOrInActiveCar(@PathVariable String status) throws OcwException {
+		if(OCWConstants.ACTIVE.equalsIgnoreCase(status) || (OCWConstants.INACTIVE.equalsIgnoreCase(status)))
+			return new ResponseEntity<>(carManagementOperation.activeOrInActiveCar(status),HttpStatus.OK);
 		return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 	}
 	

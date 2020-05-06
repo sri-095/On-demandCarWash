@@ -56,19 +56,17 @@ public class CarManagementOperation {
 	}
 
 	@Transactional(rollbackFor = OcwException.class)
-	public String deactivateCar(CarDetailsDto carDetailsDto) throws OcwException {
-		CarDetails carDetails = carDetailsRespository.findByPlateNumber(carDetailsDto.getPlateNumber());
-		carDetails.setLastRevision(OCWConstants.NO_CHAR);
-		carDetailsRespository.save(carDetails);
-		return "Deactivated Car Sucessfully";
-	}
-
-	@Transactional(rollbackFor = OcwException.class)
-	public String activateCar(CarDetailsDto carDetailsDto) throws OcwException {
-		CarDetails carDetails = carDetailsRespository.findByPlateNumber(carDetailsDto.getPlateNumber());
-		carDetails.setLastRevision(OCWConstants.YES_CHAR);
-		carDetailsRespository.save(carDetails);
-		return "Activated Car Sucessfully";
+	public List<CarDetailsDto> activeOrInActiveCar(String status) throws OcwException {
+		List<CarDetails> carDetailsDb = carDetailsRespository.findByStatus(status);
+		List<CarDetailsDto> carDetailsDtoList = new ArrayList<>();
+		carDetailsDb.stream().forEach(carDetails -> {
+			CarDetailsDto carDetailsDto = new CarDetailsDto();
+			carDetailsDto.setName(carDetails.getName());
+			carDetailsDto.setColor(carDetails.getColor());
+			carDetailsDto.setPlateNumber(carDetails.getPlateNumber());
+			carDetailsDtoList.add(carDetailsDto);
+		});
+		return carDetailsDtoList;
 	}
 
 }

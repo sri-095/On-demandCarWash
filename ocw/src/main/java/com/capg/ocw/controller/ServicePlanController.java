@@ -8,7 +8,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,16 +30,14 @@ public class ServicePlanController {
 	}
 	
 	@PostMapping("/addOrUpdateServicePlan")
-	public ResponseEntity<List<ServicePlanDto>> addOrUpdateServicePlan(List<ServicePlanDto> servicePlans) {
+	public ResponseEntity<List<ServicePlanDto>> addOrUpdateServicePlan(@RequestBody List<ServicePlanDto> servicePlans) {
 		return new ResponseEntity<>(servicePlanOperation.addOrUpdateServicePlans(servicePlans), HttpStatus.OK);
 	}
 	
-	@PutMapping("/{status}")
-	public ResponseEntity<String> activateOrDeactivateServicePlan(@RequestBody ServicePlanDto servicePlanDto,@PathVariable String status) throws OcwException {
-		if(OCWConstants.ACTIVE.equalsIgnoreCase(status))
-			return new ResponseEntity<>(servicePlanOperation.activateServicePlan(servicePlanDto) , HttpStatus.OK);
-		else if(OCWConstants.INACTIVE.equalsIgnoreCase(status))
-			return new ResponseEntity<>(servicePlanOperation.deactivateServicePlan(servicePlanDto),HttpStatus.OK);
+	@GetMapping("/{status}")
+	public ResponseEntity<List<ServicePlanDto>> activateOrInactiveServicePlan(@PathVariable String status) throws OcwException {
+		if(OCWConstants.ACTIVE.equalsIgnoreCase(status) || OCWConstants.INACTIVE.equalsIgnoreCase(status))
+			return new ResponseEntity<>(servicePlanOperation.activateOrInactiveServicePlan(status) , HttpStatus.OK);
 		return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 	}
 }
