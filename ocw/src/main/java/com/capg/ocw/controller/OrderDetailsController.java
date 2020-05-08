@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.capg.ocw.exception.OcwException;
 import com.capg.ocw.model.dto.AssignWasherDto;
 import com.capg.ocw.model.dto.OrdersDetailsDto;
 import com.capg.ocw.operation.OrderDetailsOperation;
@@ -37,5 +38,10 @@ public class OrderDetailsController {
 	@GetMapping("/getOrders/{status}")
 	public ResponseEntity<List<OrdersDetailsDto>> getOrdersByStatus(@PathVariable String status) {
 		return new ResponseEntity<>(orderDetailsOperation.getOrdersByStatus(status),HttpStatus.OK);
+	}
+	
+	@GetMapping("/getOrders/{orderid}")
+	public ResponseEntity<OrdersDetailsDto> getOrdersB(@PathVariable String orderid) throws OcwException {
+		return new ResponseEntity<>(orderDetailsOperation.getOrdersByOrderId(orderid),HttpStatus.OK);
 	}
 }

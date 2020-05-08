@@ -8,6 +8,7 @@ public class  CarDetailsDto {
 	private String plateNumber;
 	private String color;
 	private char lastRevision;
+	private String customerId;
 	
 
 }

@@ -4,12 +4,13 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellStyle;
-import org.apache.poi.ss.usermodel.FillPatternType;
-import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -112,34 +113,34 @@ public class WasherOperation {
 			Sheet sheet = workbook.createSheet("Washers");
 			
 			Row row = sheet.createRow(0);
-	        CellStyle headerCellStyle = workbook.createCellStyle();
-	        headerCellStyle.setFillForegroundColor(IndexedColors.AQUA.getIndex());
-	        headerCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+	     //   CellStyle headerCellStyle = workbook.createCellStyle();
+	     //   headerCellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 	        // Creating header
+	        
 	        Cell cell = row.createCell(0);
-	        cell.setCellValue("Name");
-	        cell.setCellStyle(headerCellStyle);
+	        cell.setCellValue("WasherId");
 	        
 	        cell = row.createCell(1);
-	        cell.setCellValue("Mobile");
-	        cell.setCellStyle(headerCellStyle);
-	
+	        cell.setCellValue("Name");
+
 	        cell = row.createCell(2);
-	        cell.setCellValue("Email");
-	        cell.setCellStyle(headerCellStyle);
-	        
+	        cell.setCellValue("Mobile");
+	
 	        cell = row.createCell(3);
+	        cell.setCellValue("Email");
+	        
+	        cell = row.createCell(4);
 	        cell.setCellValue("Ratings");
-	        cell.setCellStyle(headerCellStyle);
 	        
 	       
 			// Creating data rows for each washer
 	        for(int i = 0; i < washers.size(); i++) {
 	        	Row dataRow = sheet.createRow(i + 1);
-	        	dataRow.createCell(0).setCellValue(washers.get(i).getName());
-	        	dataRow.createCell(1).setCellValue(washers.get(i).getPhoneNumber());
-	        	dataRow.createCell(2).setCellValue(washers.get(i).getEmailId());
-	        	dataRow.createCell(3).setCellValue(washers.get(i).getRatings());
+	        	dataRow.createCell(0).setCellValue(washers.get(i).getWasherId());
+	        	dataRow.createCell(1).setCellValue(washers.get(i).getName());
+	        	dataRow.createCell(2).setCellValue(washers.get(i).getPhoneNumber());
+	        	dataRow.createCell(3).setCellValue(washers.get(i).getEmailId());
+	        	dataRow.createCell(4).setCellValue(washers.get(i).getRatings());
 	        }
 	
 	        // Making size of column auto resize to fit with data
@@ -158,5 +159,31 @@ public class WasherOperation {
 			throw new OcwException("Could not create Excel Sheet" + ex.getMessage());
 		}
 	}
+	
+	public WasherDto getWasherById(String washerId) {
+		WasherDto washerDto = new WasherDto();
+		Washer washer = washerRepository.findByWasherId(washerId);
+		if(null != washer) {
+			washerDto.setWasherId(washer.getWasherId());
+			washerDto.setName(washer.getName());
+			washerDto.setOrderList(washer.getOrderList());
+			washerDto.setEmailId(washer.getEmailId());
+		}
+		return washerDto;
+	}
 
+	public List<WasherDto> leaderboard(){
+		Map<WasherDto,Integer> washerMap = new HashMap<>();
+		List<WasherDto> allWashers = getAllWashers();
+		allWashers.stream().forEach(washer -> {
+			washerMap.put(washer,washer.getOrderList().size());
+			
+		});
+		washerMap.entrySet()
+                .stream()
+                .sorted((Map.Entry.<WasherDto, Integer>comparingByValue().reversed()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
+	return washerMap.keySet().stream().collect(Collectors.toList());
+    
+	}
 }

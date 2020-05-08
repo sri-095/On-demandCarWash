@@ -13,7 +13,10 @@ import com.capg.ocw.model.dto.CarDetailsDto;
 import com.capg.ocw.repository.CarDetailsRespository;
 import com.capg.ocw.util.OCWConstants;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Component
+@Slf4j
 public class CarManagementOperation {
 
 	@Autowired
@@ -38,19 +41,16 @@ public class CarManagementOperation {
 
 		for(CarDetailsDto carDetailsDto : carDetailsDtoList) {
 			CarDetails carDetails = carDetailsRespository.findByPlateNumber(carDetailsDto.getPlateNumber());
-			if(null != carDetails) {
-				carDetails.setName(carDetailsDto.getName());
-				carDetails.setColor(carDetailsDto.getColor());
+			if(null == carDetails) {
+				log.info("Creating new car details");
+				carDetails = new CarDetails();
 				carDetails.setPlateNumber(carDetailsDto.getPlateNumber());
+			}
+				carDetails.setName(carDetailsDto.getName());
+				carDetails.setLastRevision(OCWConstants.YES_CHAR);
+				carDetails.setColor(carDetailsDto.getColor());
+				carDetails.setCustomerId(carDetailsDto.getCustomerId());
 				carDetailsList.add(carDetails);
-			}
-			else {
-				CarDetails newCarDetails = new CarDetails();
-				newCarDetails.setName(carDetailsDto.getName());
-				newCarDetails.setPlateNumber(carDetailsDto.getPlateNumber());
-				newCarDetails.setLastRevision(OCWConstants.YES_CHAR);
-				carDetailsList.add(newCarDetails);
-			}
 		}
 		carDetailsRespository.saveAll(carDetailsList);
 	}
@@ -66,6 +66,7 @@ public class CarManagementOperation {
 			carDetailsDto.setPlateNumber(carDetails.getPlateNumber());
 			carDetailsDtoList.add(carDetailsDto);
 		});
+		log.info("Fetched "+status+" cars");
 		return carDetailsDtoList;
 	}
 

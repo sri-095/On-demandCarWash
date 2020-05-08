@@ -13,4 +13,6 @@ public interface WasherRepository extends MongoRepository<Washer, String>{
 	Washer findByWasherId(String washerId);
 	
 	List<Washer> findByStatus(String status);
+	
+	List<Washer> findFirstByOrderByOrderListDesc();
 }

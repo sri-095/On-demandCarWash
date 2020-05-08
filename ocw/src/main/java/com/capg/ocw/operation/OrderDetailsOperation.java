@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
+import com.capg.ocw.exception.OcwException;
 import com.capg.ocw.model.CWOrders;
 import com.capg.ocw.model.Washer;
 import com.capg.ocw.model.dto.AssignWasherDto;
@@ -15,7 +16,10 @@ import com.capg.ocw.repository.OrderDetailsRespository;
 import com.capg.ocw.repository.WasherRepository;
 import com.capg.ocw.util.OCWConstants;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Component
+@Slf4j
 public class OrderDetailsOperation {
 
 	@Autowired
@@ -71,5 +75,24 @@ public class OrderDetailsOperation {
 			ordersDetailsDtos.add(detailsDto);
 		}
 		return ordersDetailsDtos;
+	}
+	
+	public OrdersDetailsDto getOrdersByOrderId(String orderId) throws OcwException {
+		OrdersDetailsDto detailsDto = null;
+		CWOrders orderDetailsDb = orderDetailsRespository.findByOrderId(orderId);
+		if(null != orderDetailsDb) {
+			detailsDto = new OrdersDetailsDto();
+			detailsDto.setCost(orderDetailsDb.getCost());
+			detailsDto.setCustomerId(orderDetailsDb.getCustomerId());
+			detailsDto.setOrderId(orderDetailsDb.getOrderId());
+			detailsDto.setStatus(orderDetailsDb.getStatus());
+			detailsDto.setType(orderDetailsDb.getType());
+			detailsDto.setWasherAssigned(orderDetailsDb.getWasherAssigned());
+		}else {
+			String erromsg = "Order not found. Please enter correct id";
+			log.error(erromsg);
+			throw new OcwException(erromsg);
+		}
+		return detailsDto;
 	}
 }

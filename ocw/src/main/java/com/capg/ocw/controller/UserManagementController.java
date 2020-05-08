@@ -63,8 +63,7 @@ public class UserManagementController {
 	@GetMapping(value = "/washer/download/washerReport.xlsx")
     public ResponseEntity<InputStreamResource> excelWasherReport() throws OcwException {
     ByteArrayInputStream in = washerOperation.washerReportToExcelFile();
-    // return IOUtils.toByteArray(in);
-    
+   
     HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", "attachment; filename=washerReport.xlsx");
      return ResponseEntity
@@ -73,4 +72,13 @@ public class UserManagementController {
                   .body(new InputStreamResource(in));
     }
 	
+	@GetMapping("/washer/{washerid}")
+	public ResponseEntity<WasherDto> getWasherById(@PathVariable String washerid) throws OcwException {
+		return new ResponseEntity<>(washerOperation.getWasherById(washerid),HttpStatus.OK);
+	}
+	
+	@GetMapping("/leaderbord")
+	public ResponseEntity<List<WasherDto>> leaderboard() {
+		return new ResponseEntity<>(washerOperation.leaderboard(),HttpStatus.OK);
+	}
 }
