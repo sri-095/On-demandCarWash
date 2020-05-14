@@ -13,4 +13,6 @@ public interface OrderDetailsRespository extends MongoRepository<CWOrders, Strin
 	CWOrders findByOrderId(String orderId);
 
 	List<CWOrders> findByStatus(String status);
+
+	List<CWOrders> findByCustomerId(String customerId);
 }

@@ -11,8 +11,9 @@ import com.capg.ocw.model.CarDetails;
 public interface CarDetailsRespository extends MongoRepository<CarDetails, String>{
 
 	List<CarDetails> findAll();
-	//List<CarDetails> findByCustomerId(String customerId);
+	List<CarDetails> findByCustomerId(String customerId);
 	CarDetails findByPlateNumber(String platenumber);
 	List<CarDetails> findByStatus(String status);
+	
 	
 }

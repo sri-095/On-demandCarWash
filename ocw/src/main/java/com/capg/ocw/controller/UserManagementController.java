@@ -28,6 +28,7 @@ public class UserManagementController {
 	
 	@Autowired
 	private WasherOperation washerOperation;
+	
 	@Autowired
 	private CutomerOperation cutomerOperation;
 	

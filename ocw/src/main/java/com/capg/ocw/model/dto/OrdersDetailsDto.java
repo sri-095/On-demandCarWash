@@ -11,5 +11,8 @@ public class OrdersDetailsDto {
 	private double cost;
 	private char washerAssigned;
 	private String status;
-
+	private CarDetailsDto carDetailsDto;
+	private ServicePlanDto servicePlanDto;
+	private AddOnDto addOnDto;
+	private String notes;
 }

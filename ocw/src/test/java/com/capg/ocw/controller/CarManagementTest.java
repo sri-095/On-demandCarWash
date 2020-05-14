@@ -1,5 +1,12 @@
 package com.capg.ocw.controller;
 
+import static org.junit.Assert.assertNotNull;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.Before;
+import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -8,14 +15,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import com.capg.ocw.model.dto.CarDetailsDto;
 import com.capg.ocw.operation.CarManagementOperation;
-
-import static org.junit.Assert.assertNotNull;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import org.junit.Before;
-import org.junit.Test;
 
 @SpringBootTest
 public class CarManagementTest {

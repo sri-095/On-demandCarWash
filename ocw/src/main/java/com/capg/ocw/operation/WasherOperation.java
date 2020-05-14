@@ -27,6 +27,7 @@ import com.capg.ocw.model.dto.WasherDto;
 import com.capg.ocw.repository.ReviewRatingsRepository;
 import com.capg.ocw.repository.WasherRepository;
 import com.capg.ocw.util.OCWConstants;
+import com.capg.ocw.util.OCWUtils;
 
 @Component
 public class WasherOperation {
@@ -37,6 +38,9 @@ public class WasherOperation {
 	@Autowired
 	private ReviewRatingsRepository reviewRatingsRepository;
 	
+	@Autowired
+	private OCWUtils oCWUtils;
+	
 	public List<WasherDto> getAllWashers() {
 		List<WasherDto> washerDtoList = new ArrayList<>();
 		
@@ -46,7 +50,6 @@ public class WasherOperation {
 			washerDto.setWasherId(washer.getWasherId());
 			washerDto.setName(washer.getName());
 			washerDto.setOrderList(washer.getOrderList());
-			washerDto.setEmailId(washer.getEmailId());
 			washerDto.setRatings(washer.getRatings());
 			washerDto.setPhoneNumber(washer.getPhoneNumber());
 			washerDtoList.add(washerDto);
@@ -61,9 +64,8 @@ public class WasherOperation {
 			Washer washer = washerRepository.findByWasherId(washerDto.getWasherId());
 			if(null == washer) {
 				washer = new Washer();
-				washer.setWasherId(washerDto.getWasherId());
+				washer.setWasherId(oCWUtils.prepareId(getAllWashers().size(), "W"));
 			}
-				washer.setEmailId(washerDto.getEmailId());
 				washer.setName(washerDto.getName());
 				washer.setPhoneNumber(washerDto.getPhoneNumber());
 				washer.setLastRevision(OCWConstants.YES_CHAR);
@@ -83,7 +85,6 @@ public class WasherOperation {
 			washerDto.setWasherId(washer.getWasherId());
 			washerDto.setName(washer.getName());
 			washerDto.setOrderList(washer.getOrderList());
-			washerDto.setEmailId(washer.getEmailId());
 			washerDtoList.add(washerDto);
 		});
 		
@@ -167,7 +168,6 @@ public class WasherOperation {
 			washerDto.setWasherId(washer.getWasherId());
 			washerDto.setName(washer.getName());
 			washerDto.setOrderList(washer.getOrderList());
-			washerDto.setEmailId(washer.getEmailId());
 		}
 		return washerDto;
 	}

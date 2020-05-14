@@ -10,11 +10,16 @@ import org.springframework.util.CollectionUtils;
 import com.capg.ocw.exception.OcwException;
 import com.capg.ocw.model.CWOrders;
 import com.capg.ocw.model.Washer;
+import com.capg.ocw.model.dto.AddOnDto;
 import com.capg.ocw.model.dto.AssignWasherDto;
 import com.capg.ocw.model.dto.OrdersDetailsDto;
+import com.capg.ocw.model.dto.ServicePlanDto;
+import com.capg.ocw.model.dto.WashPackageDto;
 import com.capg.ocw.repository.OrderDetailsRespository;
 import com.capg.ocw.repository.WasherRepository;
+import com.capg.ocw.service.MessageService;
 import com.capg.ocw.util.OCWConstants;
+import com.capg.ocw.util.OCWUtils;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,13 +33,19 @@ public class OrderDetailsOperation {
 	@Autowired
 	private WasherRepository washerRepository;
 	
+	@Autowired
+	private OCWUtils ocwUtils;
+	
+	@Autowired
+	private MessageService messageService;
+	
 	public List<OrdersDetailsDto> getAllOrderDetails() {
 		List<OrdersDetailsDto> ordersDetailsDtos = new ArrayList<>();
 		List<CWOrders> orderDetailsDb = orderDetailsRespository.findAll();
 		for(CWOrders cwOrders : orderDetailsDb) {
 			OrdersDetailsDto detailsDto = new OrdersDetailsDto();
 			detailsDto.setCost(cwOrders.getCost());
-			detailsDto.setCustomerId(cwOrders.getCustomerId());
+			detailsDto.setCustomerId(cwOrders.getCarDetailsDto().getCustomerId());
 			detailsDto.setOrderId(cwOrders.getOrderId());
 			detailsDto.setStatus(cwOrders.getStatus());
 			detailsDto.setType(cwOrders.getType());
@@ -67,7 +78,7 @@ public class OrderDetailsOperation {
 		for(CWOrders cwOrders : orderDetailsDb) {
 			OrdersDetailsDto detailsDto = new OrdersDetailsDto();
 			detailsDto.setCost(cwOrders.getCost());
-			detailsDto.setCustomerId(cwOrders.getCustomerId());
+			detailsDto.setCustomerId(cwOrders.getCarDetailsDto().getCustomerId());
 			detailsDto.setOrderId(cwOrders.getOrderId());
 			detailsDto.setStatus(cwOrders.getStatus());
 			detailsDto.setType(cwOrders.getType());
@@ -83,7 +94,7 @@ public class OrderDetailsOperation {
 		if(null != orderDetailsDb) {
 			detailsDto = new OrdersDetailsDto();
 			detailsDto.setCost(orderDetailsDb.getCost());
-			detailsDto.setCustomerId(orderDetailsDb.getCustomerId());
+			detailsDto.setCustomerId(orderDetailsDb.getCarDetailsDto().getCustomerId());
 			detailsDto.setOrderId(orderDetailsDb.getOrderId());
 			detailsDto.setStatus(orderDetailsDb.getStatus());
 			detailsDto.setType(orderDetailsDb.getType());
@@ -95,4 +106,56 @@ public class OrderDetailsOperation {
 		}
 		return detailsDto;
 	}
+
+	public List<OrdersDetailsDto> getOrdersByCustomerId(String customerId) {
+		List<OrdersDetailsDto> ordersDetailsDtos = new ArrayList<>();
+		List<CWOrders> orderDetailsDb = orderDetailsRespository.findByCustomerId(customerId);
+		for(CWOrders cwOrders : orderDetailsDb) {
+			OrdersDetailsDto detailsDto = new OrdersDetailsDto();
+			detailsDto.setCost(cwOrders.getCost());
+			detailsDto.setCustomerId(cwOrders.getCustomerId());
+			detailsDto.setOrderId(cwOrders.getOrderId());
+			detailsDto.setStatus(cwOrders.getStatus());
+			detailsDto.setType(cwOrders.getType());
+			detailsDto.setWasherAssigned(cwOrders.getWasherAssigned());
+			ordersDetailsDtos.add(detailsDto);
+		}
+		return ordersDetailsDtos;
+	}
+	
+	public void bookCarWash(WashPackageDto packageDto) {
+		CWOrders orders = new CWOrders();
+		orders.setOrderId(ocwUtils.prepareId(orderDetailsRespository.findAll().size(), "O"));
+		orders.setCarDetailsDto(packageDto.getCarDetailsDto());
+		orders.setAddOnDto(packageDto.getAddOnDtoList());
+		orders.setNotes(packageDto.getNotes());
+		orders.setServicePlanDto(packageDto.getServicePlanDto());
+		orders.setStatus("pending");
+		orders.setCost(cost(packageDto.getAddOnDtoList(),packageDto.getServicePlanDto()));
+		orders.setOrderedDate(packageDto.getOrderedDate());
+		orders.setWasherAssigned(OCWConstants.NO_CHAR);
+		orders.setLastRevision(OCWConstants.YES_CHAR);
+		orders.setScheduleDate(packageDto.getScheduleDate() == null? packageDto.getOrderedDate() : packageDto.getScheduleDate());
+		orderDetailsRespository.save(orders);
+		//send notification for washer
+	}
+
+	private double cost(List<AddOnDto> addOnDtoList, ServicePlanDto servicePlanDto) {
+		
+		double cost = servicePlanDto.getCost(); 
+		if(!CollectionUtils.isEmpty(addOnDtoList)) {
+			for(AddOnDto addOnDto : addOnDtoList)
+				cost = addOnDto.getCost() + cost;
+		}
+		return cost;
+	}
+
+	public String notifyUser(String status) {
+		String msg= "The washer has " +status+"ed ";
+		
+		return messageService.sendUserWasherUpdate(msg);
+	}
+	
+	
+
 }
