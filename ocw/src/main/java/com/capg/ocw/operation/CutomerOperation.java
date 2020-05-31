@@ -18,6 +18,7 @@ import com.capg.ocw.model.dto.PaymentDto;
 import com.capg.ocw.model.dto.ReviewRatingDto;
 import com.capg.ocw.repository.CarDetailsRespository;
 import com.capg.ocw.repository.CustomerRepository;
+import com.capg.ocw.repository.PaymentRepository;
 import com.capg.ocw.repository.ReviewRatingsRepository;
 import com.capg.ocw.util.OCWUtils;
 
@@ -41,6 +42,9 @@ public class CutomerOperation {
 	
 	@Autowired
 	private PasswordEncoder passwordEncoder;
+	
+	@Autowired
+	private PaymentRepository paymentRepository;
 	
 	
 	public List<ReviewRatingDto> viewCustomerRating(String customerid) {
@@ -105,12 +109,13 @@ public class CutomerOperation {
 	public String savePaymentDetails(PaymentDto paymentDto) {
 		Customer customer = customerRepository.findByCustomerId(paymentDto.getCustomerId());
 		PaymentDetails payDetails = new PaymentDetails();
-		payDetails.setCardNo(paymentDto.getCardNo());
-		payDetails.setPin(passwordEncoder.encode(paymentDto.getPin()));
-		payDetails.setType(paymentDto.getType());
+		payDetails.setCardNo((null == paymentDto.getCardNo()) ? null : paymentDto.getCardNo());
+		payDetails.setPin(null == paymentDto.getPin() ? null : passwordEncoder.encode(paymentDto.getPin()));
+		payDetails.setType(null == paymentDto.getCardNo() ? "cod" : "onlinepayment");
+		paymentRepository.save(payDetails);
 		customer.setDetails(payDetails);
 		customerRepository.save(customer);
-		if(paymentDto.getType().equalsIgnoreCase("cod"))
+		if(payDetails.getType().equalsIgnoreCase("cod"))
 			return "Selected payment mode is cash on delivery";
 		return "Paid successfully";
 	}

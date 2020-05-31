@@ -1,4 +1,4 @@
-/*package com.capg.ocw.config;
+package com.capg.ocw.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -56,4 +56,4 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 		return new InMemoryTokenStore();
 	}
 
-}*/
+}

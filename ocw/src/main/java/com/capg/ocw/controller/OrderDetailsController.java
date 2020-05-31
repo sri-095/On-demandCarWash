@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.capg.ocw.exception.OcwException;
@@ -37,24 +38,24 @@ public class OrderDetailsController {
 		return new ResponseEntity<>("Assigned Washer",HttpStatus.OK);
 	}
 
-	@GetMapping("/getOrders/{status}")
-	public ResponseEntity<List<OrdersDetailsDto>> getOrdersByStatus(@PathVariable String status) {
+	@GetMapping("/getOrdersByStatus")
+	public ResponseEntity<List<OrdersDetailsDto>> getOrdersByStatus(@RequestParam String status) {
 		return new ResponseEntity<>(orderDetailsOperation.getOrdersByStatus(status),HttpStatus.OK);
 	}
 
-	@GetMapping("/getOrders/{orderid}")
-	public ResponseEntity<OrdersDetailsDto> getOrders(@PathVariable String orderid) throws OcwException {
+	@GetMapping("/getOrdersByOrderId")
+	public ResponseEntity<OrdersDetailsDto> getOrdersByOrderId(@RequestParam String orderid) throws OcwException {
 		return new ResponseEntity<>(orderDetailsOperation.getOrdersByOrderId(orderid),HttpStatus.OK);
 	}
-	@GetMapping("/getOrders/{customerId}")
-	public ResponseEntity<List<OrdersDetailsDto>> getOrdersByCustomerId(@PathVariable String customerId) throws OcwException {
+	@GetMapping("/getOrdersByCustomerId")
+	public ResponseEntity<List<OrdersDetailsDto>> getOrdersByCustomerId(@RequestParam String customerId) throws OcwException {
 		return new ResponseEntity<>(orderDetailsOperation.getOrdersByCustomerId(customerId),HttpStatus.OK);
 	}
 
 	@PostMapping("/bookCarWash")
 	public ResponseEntity<String> bookCarWash(@RequestBody WashPackageDto washPackageDto) {
-		orderDetailsOperation.bookCarWash(washPackageDto);
-		return new ResponseEntity<>("Booking confirmed",HttpStatus.OK);
+		
+		return new ResponseEntity<>(orderDetailsOperation.bookCarWash(washPackageDto),HttpStatus.OK);
 	}
 
 	@GetMapping("/notifyuser/{status}")

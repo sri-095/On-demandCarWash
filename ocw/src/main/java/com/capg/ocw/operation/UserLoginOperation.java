@@ -60,7 +60,7 @@ public class UserLoginOperation {
 			customerRepository.save(customer);
 			carDetailsRespository.saveAll(customer.getCarDetails());
 			addressRepository.save(customer.getAddress());
-			msg = "Saved user successfully";
+			msg = "Saved user successfully. Your customer ID is " + customerId;
 		return msg;
 			
 	}

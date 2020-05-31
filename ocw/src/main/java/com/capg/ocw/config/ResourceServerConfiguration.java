@@ -1,4 +1,4 @@
-/*package com.capg.ocw.config;
+package com.capg.ocw.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -22,4 +22,3 @@ public class ResourceServerConfiguration extends ResourceServerConfigurerAdapter
 		http.csrf().disable().authorizeRequests().anyRequest().authenticated();
 	}
 }
-*/

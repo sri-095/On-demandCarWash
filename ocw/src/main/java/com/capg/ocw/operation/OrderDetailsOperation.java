@@ -1,6 +1,7 @@
 package com.capg.ocw.operation;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +50,11 @@ public class OrderDetailsOperation {
 			detailsDto.setOrderId(cwOrders.getOrderId());
 			detailsDto.setStatus(cwOrders.getStatus());
 			detailsDto.setType(cwOrders.getType());
+			detailsDto.setCarDetailsDto(cwOrders.getCarDetailsDto());
+			detailsDto.setAddOnDtos(cwOrders.getAddOnDto());
+			detailsDto.setNotes(cwOrders.getNotes());
+			detailsDto.setServicePlanDto(cwOrders.getServicePlanDto());
+			
 			detailsDto.setWasherAssigned(cwOrders.getWasherAssigned());
 			ordersDetailsDtos.add(detailsDto);
 		}
@@ -59,7 +65,7 @@ public class OrderDetailsOperation {
 		
 		CWOrders orders = orderDetailsRespository.findByOrderId(assignWasherDto.getOrderId());
 		orders.setWasherAssigned(OCWConstants.YES_CHAR);
-		orders.setStatus("UnderProcess");
+		orders.setStatus("Assigned");
 		orders.setWasherId(assignWasherDto.getWasherId());
 		orderDetailsRespository.save(orders);
 		
@@ -83,6 +89,10 @@ public class OrderDetailsOperation {
 			detailsDto.setStatus(cwOrders.getStatus());
 			detailsDto.setType(cwOrders.getType());
 			detailsDto.setWasherAssigned(cwOrders.getWasherAssigned());
+			detailsDto.setCarDetailsDto(cwOrders.getCarDetailsDto());
+			detailsDto.setAddOnDtos(cwOrders.getAddOnDto());
+			detailsDto.setNotes(cwOrders.getNotes());
+			detailsDto.setServicePlanDto(cwOrders.getServicePlanDto());
 			ordersDetailsDtos.add(detailsDto);
 		}
 		return ordersDetailsDtos;
@@ -99,6 +109,10 @@ public class OrderDetailsOperation {
 			detailsDto.setStatus(orderDetailsDb.getStatus());
 			detailsDto.setType(orderDetailsDb.getType());
 			detailsDto.setWasherAssigned(orderDetailsDb.getWasherAssigned());
+			detailsDto.setCarDetailsDto(orderDetailsDb.getCarDetailsDto());
+			detailsDto.setAddOnDtos(orderDetailsDb.getAddOnDto());
+			detailsDto.setNotes(orderDetailsDb.getNotes());
+			detailsDto.setServicePlanDto(orderDetailsDb.getServicePlanDto());
 		}else {
 			String erromsg = "Order not found. Please enter correct id";
 			log.error(erromsg);
@@ -118,26 +132,32 @@ public class OrderDetailsOperation {
 			detailsDto.setStatus(cwOrders.getStatus());
 			detailsDto.setType(cwOrders.getType());
 			detailsDto.setWasherAssigned(cwOrders.getWasherAssigned());
+			detailsDto.setCarDetailsDto(cwOrders.getCarDetailsDto());
+			detailsDto.setAddOnDtos(cwOrders.getAddOnDto());
+			detailsDto.setNotes(cwOrders.getNotes());
+			detailsDto.setServicePlanDto(cwOrders.getServicePlanDto());
 			ordersDetailsDtos.add(detailsDto);
 		}
 		return ordersDetailsDtos;
 	}
 	
-	public void bookCarWash(WashPackageDto packageDto) {
+	public String bookCarWash(WashPackageDto packageDto) {
 		CWOrders orders = new CWOrders();
 		orders.setOrderId(ocwUtils.prepareId(orderDetailsRespository.findAll().size(), "O"));
 		orders.setCarDetailsDto(packageDto.getCarDetailsDto());
+		orders.setCustomerId(packageDto.getCarDetailsDto().getCustomerId());
 		orders.setAddOnDto(packageDto.getAddOnDtoList());
 		orders.setNotes(packageDto.getNotes());
 		orders.setServicePlanDto(packageDto.getServicePlanDto());
 		orders.setStatus("pending");
 		orders.setCost(cost(packageDto.getAddOnDtoList(),packageDto.getServicePlanDto()));
-		orders.setOrderedDate(packageDto.getOrderedDate());
+		orders.setOrderedDate(new Date());
 		orders.setWasherAssigned(OCWConstants.NO_CHAR);
 		orders.setLastRevision(OCWConstants.YES_CHAR);
 		orders.setScheduleDate(packageDto.getScheduleDate() == null? packageDto.getOrderedDate() : packageDto.getScheduleDate());
 		orderDetailsRespository.save(orders);
 		//send notification for washer
+		return "Booking confirmed. Your Order Id is " + orders.getOrderId();
 	}
 
 	private double cost(List<AddOnDto> addOnDtoList, ServicePlanDto servicePlanDto) {

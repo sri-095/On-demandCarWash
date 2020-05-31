@@ -15,6 +15,4 @@ public class WasherDto {
 	private List<CWOrders> orderList;
 	private String name;
 	private long phoneNumber;
-
-
 }

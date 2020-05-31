@@ -128,9 +128,6 @@ public class WasherOperation {
 	        cell.setCellValue("Mobile");
 	
 	        cell = row.createCell(3);
-	        cell.setCellValue("Email");
-	        
-	        cell = row.createCell(4);
 	        cell.setCellValue("Ratings");
 	        
 	       
@@ -140,8 +137,7 @@ public class WasherOperation {
 	        	dataRow.createCell(0).setCellValue(washers.get(i).getWasherId());
 	        	dataRow.createCell(1).setCellValue(washers.get(i).getName());
 	        	dataRow.createCell(2).setCellValue(washers.get(i).getPhoneNumber());
-	        	dataRow.createCell(3).setCellValue(washers.get(i).getEmailId());
-	        	dataRow.createCell(4).setCellValue(washers.get(i).getRatings());
+	        	dataRow.createCell(3).setCellValue(washers.get(i).getRatings());
 	        }
 	
 	        // Making size of column auto resize to fit with data
